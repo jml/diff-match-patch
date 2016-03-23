@@ -1,0 +1,54 @@
+name:                diff-match-patch
+version:             0.1.0.0
+synopsis:            Library for diff, patch, and match
+description:         Please see README.rst
+homepage:            http://github.com/jml/diff-match-patch#readme
+license:             GPL
+license-file:        LICENSE
+author:              Jonathan M. Lange
+maintainer:          jml@mumak.net
+copyright:           Copyright (c) Jonathan M. Lange
+category:            Data
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Lib
+  build-depends:       base >= 4.8 && < 5
+                     , basic-prelude >= 0.5
+                     , errors
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+                     , OverloadedStrings
+  ghc-options:         -Wall
+
+executable diff-match-patch-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , basic-prelude
+                     , diff-match-patch
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+                     , OverloadedStrings
+
+test-suite diff-match-patch-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , diff-match-patch
+                     , tasty
+                     , tasty-quickcheck
+                     , basic-prelude
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+                     , OverloadedStrings
+
+source-repository head
+  type:     git
+  location: https://github.com/jml/diff-match-patch
