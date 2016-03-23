@@ -1,4 +1,4 @@
-module Lib
+module Data.DiffMatchPatch
     ( someFunc
     ) where
 
