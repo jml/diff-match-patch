@@ -11,11 +11,20 @@ import Test.Tasty.QuickCheck
 import Data.DiffMatchPatch (DiffChange(..), calculateDiff)
 
 
+-- TODO: Move instances to separate packages
+
+-- TODO: Rename to 'Test'
+
+-- TODO: Add a Travis badge to the README.rst
+
+-- TODO: Fix hyperlink in README.rst
+
+
 instance Arbitrary Text where
   arbitrary = fromString <$> arbitrary
 
 
-newtype NonEmptyText = NonEmptyText { getNonEmptyText :: Text } deriving (Eq, Show)
+newtype NonEmptyText = NonEmptyText Text deriving (Eq, Show)
 
 instance Arbitrary NonEmptyText where
   arbitrary = NonEmptyText <$> arbitrary `suchThat` (not . Text.null)
@@ -24,6 +33,7 @@ instance Arbitrary NonEmptyText where
 
 tests :: TestTree
 tests =
+  -- Tests for calcluteDiff function, the main entry point of the code.
   testGroup "calculateDiff"
   [ testGroup "unit tests"
     [ testCase "empty text produces empty diff" $
@@ -31,13 +41,17 @@ tests =
     ]
   , testGroup "properties"
     [ testProperty "equal text produces equal diff" $
-        \x -> not (Text.null x) ==> (calculateDiff x x === [Equal x])
+        \(NonEmptyText x) -> calculateDiff x x === [Equal x]
     , testProperty "non-equal text produces non-equal diff" $
-      \x y -> stripEquals (calculateDiff (getNonEmptyText x) (getNonEmptyText y)) /= []
+      \(NonEmptyText x) (NonEmptyText y) -> stripEquals (calculateDiff x y) /= []
     ]
   ]
 
 
+-- | Return a list of DiffChanges with the equality objects split out.
+--
+-- XXX: Really should be internal to the property where it's used, but I can't
+-- figure that out.
 stripEquals :: [DiffChange a] -> [DiffChange a]
 stripEquals = mapMaybe notEquals
   where
