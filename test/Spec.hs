@@ -11,7 +11,7 @@ import Test.Tasty.QuickCheck
 import Data.DiffMatchPatch (DiffChange(..), calculateDiff)
 
 
--- TODO: Move instances to separate packages
+-- TODO: Move instances to separate packages.
 
 -- TODO: Rename to 'Test'
 
