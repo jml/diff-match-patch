@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Data.DiffMatchPatch
+                     , Data.DiffMatchPatch.Internal
   build-depends:       base >= 4.8 && < 5
                      , basic-prelude >= 0.5
                      , errors
@@ -23,6 +24,8 @@ library
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude
                      , OverloadedStrings
+                     , NamedFieldPuns
+                     , RecordWildCards
   ghc-options:         -Wall
 
 executable diff-match-patch-exe
@@ -35,6 +38,8 @@ executable diff-match-patch-exe
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude
                      , OverloadedStrings
+                     , NamedFieldPuns
+                     , RecordWildCards
 
 test-suite diff-match-patch-test
   type:                exitcode-stdio-1.0
@@ -51,6 +56,8 @@ test-suite diff-match-patch-test
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude
                      , OverloadedStrings
+                     , NamedFieldPuns
+                     , RecordWildCards
 
 source-repository head
   type:     git

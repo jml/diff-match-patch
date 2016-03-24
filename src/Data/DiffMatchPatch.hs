@@ -1,3 +1,4 @@
+
 module Data.DiffMatchPatch
     ( DiffChange(..)
     , calculateDiff
@@ -19,24 +20,3 @@ calculateDiff :: Text -> Text -> [DiffChange Text]
 calculateDiff x y
   | x == y    = if Text.null x then [] else [Equal x]
   | otherwise = error "TODO: Actual diffing not implemented yet"
-
-
-
-data TwoTexts = TwoTexts
-                { first :: Text
-                , second :: Text
-                , prefix :: Text
-                , suffix :: Text
-                }
-
-
-optimizeEnds :: Text -> Text -> TwoTexts
-optimizeEnds first second =
-  case Text.commonPrefixes first second of
-    Nothing -> TwoTexts first second "" ""
-    Just (p, f, s) -> TwoTexts first second p ""
-
-
-getTexts :: TwoTexts -> (Text, Text)
-getTexts (TwoTexts first second prefix suffix) =
-  (prefix <> first <> suffix, prefix <> second <> suffix)

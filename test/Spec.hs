@@ -9,6 +9,7 @@ import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
 
 import Data.DiffMatchPatch (DiffChange(..), calculateDiff)
+import Data.DiffMatchPatch.Internal
 
 
 -- TODO: Move instances to separate packages.
@@ -31,9 +32,61 @@ instance Arbitrary NonEmptyText where
   shrink (NonEmptyText t) = [NonEmptyText t | t' <- shrink t, not (Text.null t')]
 
 
-tests :: TestTree
-tests =
-  -- Tests for calcluteDiff function, the main entry point of the code.
+instance Arbitrary TextPair where
+
+  -- | Construct an arbitrary 'TextPair'. Pair is quite likely to have common
+  -- prefix & suffix.
+  arbitrary = do
+    prefix <- arbitrary
+    suffix <- arbitrary
+    let surround x = prefix <> x <> suffix
+    makeTextPair <$> (surround <$> arbitrary)
+                 <*> (surround <$> arbitrary)
+
+
+-- | Tests for TextPair logic.
+textPairTests :: TestTree
+textPairTests =
+  testGroup "TextPair"
+  [ testGroup "properties"
+    [ testProperty "getTexts extracts original pair" $
+      \x y -> getTexts (makeTextPair x y) === (x, y)
+
+    , testProperty "cores start differently" $
+      \pair -> case getTextCores pair of
+        ("", "") -> True
+        (_,  "") -> True
+        ("", _)  -> True
+        (x,  y)  -> Text.head x /= Text.head y
+
+    , testProperty "cores end differently" $
+      \pair -> case getTextCores pair of
+        ("", "") -> True
+        (_,  "") -> True
+        ("", _)  -> True
+        (x,  y)  -> Text.last x /= Text.last y
+
+    , testProperty "prefix <> core <> suffix === original" $
+      \x y -> let pair     = makeTextPair x y
+                  (x', y') = getTextCores pair
+                  prefix   = commonPrefix pair
+                  suffix   = commonSuffix pair
+              in prefix <> x' <> suffix === x .&&. prefix <> y' <> suffix === y
+    ]
+    , testGroup "unit tests"
+      [ testCase "commonSuffixes happy example" $
+        commonSuffixes "barfoo" "quuxfoo" @?= Just ("foo", "bar", "quux")
+      , testCase "commonSuffixes nothing in common" $
+        commonSuffixes "veeble" "fetzer" @?= Nothing
+      , testCase "commonSuffixes first empty" $
+        commonSuffixes "" "baz" @?= Nothing
+      ]
+  ]
+
+
+-- | Tests for calcluteDiff function, the main entry point of the code.
+calculateDiffTests :: TestTree
+calculateDiffTests =
   testGroup "calculateDiff"
   [ testGroup "unit tests"
     [ testCase "empty text produces empty diff" $
@@ -47,16 +100,22 @@ tests =
     ]
   ]
 
-
--- | Return a list of DiffChanges with the equality objects split out.
---
--- XXX: Really should be internal to the property where it's used, but I can't
--- figure that out.
-stripEquals :: [DiffChange a] -> [DiffChange a]
-stripEquals = mapMaybe notEquals
   where
-    notEquals (Equal _) = Nothing
-    notEquals x         = Just x
+    -- | Return a list of DiffChanges with the equality objects split out.
+    stripEquals :: [DiffChange a] -> [DiffChange a]
+    stripEquals = mapMaybe notEquals
+      where
+        notEquals (Equal _) = Nothing
+        notEquals x         = Just x
+
+
+tests :: TestTree
+tests =
+  testGroup "All tests"
+  [ calculateDiffTests
+  , textPairTests
+  ]
+
 
 
 main :: IO ()
