@@ -26,6 +26,7 @@ library
                      , OverloadedStrings
                      , NamedFieldPuns
                      , RecordWildCards
+                     , ViewPatterns
   ghc-options:         -Wall
 
 executable diff-match-patch-exe
@@ -40,6 +41,7 @@ executable diff-match-patch-exe
                      , OverloadedStrings
                      , NamedFieldPuns
                      , RecordWildCards
+                     , ViewPatterns
 
 test-suite diff-match-patch-test
   type:                exitcode-stdio-1.0
@@ -58,6 +60,7 @@ test-suite diff-match-patch-test
                      , OverloadedStrings
                      , NamedFieldPuns
                      , RecordWildCards
+                     , ViewPatterns
 
 source-repository head
   type:     git

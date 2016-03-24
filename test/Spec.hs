@@ -72,6 +72,9 @@ textPairTests =
                   prefix   = commonPrefix pair
                   suffix   = commonSuffix pair
               in prefix <> x' <> suffix === x .&&. prefix <> y' <> suffix === y
+
+    , testProperty "cores only equal iff empty" $
+      \(getTextCores -> (x, y)) -> x /= y .||. (Text.null x .&&. Text.null y)
     ]
     , testGroup "unit tests"
       [ testCase "commonSuffixes happy example" $
